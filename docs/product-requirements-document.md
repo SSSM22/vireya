@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 
-## AFC Restaurant Management System
+## Vireya Restaurant Management System
 
 **Version:** 1.0
 
@@ -16,21 +16,22 @@
 
 ### 1.1 Purpose
 
-This PRD defines the product requirements for the AFC Restaurant Management System, a cloud-enabled restaurant operations platform designed to support AFC-owned branches and franchise partners. The goal is to replace manual billing, inventory, and reporting workflows with a resilient, scalable, audit-ready system that supports rapid growth.
+This PRD defines the product requirements for the Vireya Restaurant Management System, a cloud-enabled restaurant operations platform designed to support Vireya-owned branches and franchise partners, with AFC as the first client. The goal is to replace manual billing, inventory, and reporting workflows with a resilient, scalable, audit-ready system that supports rapid growth.
 
 ### 1.2 Scope
 
 The initial delivery scope covers the critical MVP foundation for branch operations, including:
 
-- POS billing and payment settlement
-- Offline resilience and sync
+- QR-based table ordering and bill presentation
+- Integration with existing payment methods rather than building new payment gateways
+- Offline resilience and sync for order capture and kitchen coordination
 - Franchise-ready multi-tenancy
 - Inventory perishability and waste control
 - Order flow edge cases and kitchen coordination
 - Security, audit, and compliance
 - Rush hour performance and reporting
 
-Phase 1 expands analytics, dynamic menu management, customer loyalty, and staff monitoring. Phase 2 adds table/reservation workflows, QR ordering, and delivery enablement.
+Phase 1 expands analytics, dynamic menu management, customer loyalty, and staff monitoring. MVP also includes QR-based table ordering with bill display; full delivery enablement and reservations remain Phase 2.
 
 ### 1.3 Success Criteria
 
@@ -39,7 +40,7 @@ The solution will be considered successful when it achieves:
 - Billing time reduced by at least 50% during peak hours
 - Real-time branch visibility across sales, inventory, and operations
 - Offline POS operation with local transaction queueing and safe sync
-- Audit trail for all payments, refunds, discounts, and order changes
+- Audit trail for order and bill changes while leveraging existing branch payment processes
 - Franchise isolation with branch-level pricing, menu overrides, and revenue partitioning
 - Inventory cost control with expiry tracking, BOM-based stock deduction, and waste categorization
 - System stability under 100+ orders/hour peak load
@@ -48,7 +49,7 @@ The solution will be considered successful when it achieves:
 ### 1.4 Key Risks
 
 - **Architecture risk:** Multi-tenancy and offline sync must be designed early; retrofitting later will be expensive.
-- **Financial risk:** Payment settlement, split bills, refunds, and audit trail are high-risk areas with direct revenue impact.
+- **Financial risk:** Payment settlement and gateway integration are not part of MVP; focus is on accurate bill presentation and use of existing branch payment methods.
 - **Operational risk:** Incomplete order flow handling or kitchen coordination will create customer service failures.
 - **Data risk:** Poor inventory and waste tracking can lead to food safety issues and inaccurate profitability.
 - **Performance risk:** If the platform cannot sustain rush hour load, the system may increase customer churn and revenue loss.
@@ -117,14 +118,13 @@ A split bill with cash and UPI payments, a failed card transaction, and a cash d
 
 #### Feature Spec
 
-- **Payment Gateway Integration:** Support UPI, credit/debit cards, and wallet payments through a validated gateway.
+- **Existing Payment Methods:** MVP will use the branch's existing cash and UPI payment processes rather than building new payment gateways.
+- **Bill Presentation:** Display the bill clearly for customers and staff, showing totals, taxes, and itemization.
 - **Cash Reconciliation:** Track opening/closing cash float per cashier and reconcile shift totals.
-- **Split Bill Logic:** Allow multiple payment modes per order with individual settlement status.
-- **Partial Payment Support:** Capture installments and maintain outstanding balance per order.
+- **Audit Trail:** Log bill generation, order changes, and refund actions for traceability.
 - **Refund & Reversal Workflow:** Require manager approval for refunds above threshold and log reversals.
-- **Payment Failure Handling:** Preserve order state when payment fails and define retry/refund/cancellation flows.
-- **Audit Trail:** Record every payment event with user, timestamp, amount, method, and status.
-- **EOD Settlement Report:** Generate daily reports comparing cash counted vs system totals.
+- **Payment Failure Handling:** Preserve order state when a payment attempt fails in the existing branch workflow.
+- **EOD Settlement Report:** Generate daily reports comparing cash counted vs system totals where branch data is available.
 
 ### 3.3 Gap 3: Inventory Perishability & Recipe Gaps
 
@@ -329,7 +329,7 @@ Existing branch data exists in Excel and notebooks, requiring validation, cleans
 - **Migration Audit:** Log all migration operations and corrections.
 - **Training & Support:** Provide end-user training for data-entry and reconciliation.
 
-### 3.14 Gap 14: QR Ordering & Delivery (Phase 2)
+### 3.14 Gap 14: QR Ordering & Delivery (MVP for table QR ordering; Phase 2 for delivery)
 
 #### Real-World Scenario
 
@@ -337,22 +337,22 @@ Customers request QR-based ordering and delivery, but the current system only su
 
 #### Feature Spec
 
-- **QR Menu Access:** Generate QR codes for table and takeout ordering.
-- **Mobile Order Form:** Provide a mobile-friendly order capture interface.
-- **Order Integration:** Route QR and delivery orders into the existing KOT and POS pipeline.
-- **Delivery Address Capture:** Collect address and contact details for delivery orders.
-- **Real-Time Status:** Display order status updates to customers.
+- **QR Menu Access:** Generate QR codes for table ordering in-branch.
+- **Table Order Capture:** Provide a mobile-friendly table order entry interface.
+- **Order Integration:** Route QR table orders into the existing KOT and POS pipeline.
+- **Real-Time Status:** Display order status updates on the mobile interface.
 - **Online Payment:** Accept payments from the mobile order channel.
-- **ETA Calculator:** Estimate preparation time and delivery readiness.
-- **Delivery Assignment:** Assign drivers or pickup personnel.
-- **Delivery Tracking:** Track delivery status and route progress.
-- **Delivery Analytics:** Report delivery order volume and fulfilment times.
+- **Delivery Address Capture:** Collect address and contact details for delivery orders. _(Phase 2)_
+- **Delivery Assignment:** Assign drivers or pickup personnel. _(Phase 2)_
+- **ETA Calculator:** Estimate preparation time and delivery readiness. _(Phase 2)_
+- **Delivery Tracking:** Track delivery status and route progress. _(Phase 2)_
+- **Delivery Analytics:** Report delivery order volume and fulfilment times. _(Phase 2)_
 
 ---
 
 ## 4. User Stories
 
-### 4.1 MVP Stories (30 stories)
+### 4.1 MVP Stories (24 stories)
 
 1. As a **Cashier**, I want to create a POS bill quickly so that customers can pay and leave faster.
 2. As a **Cashier**, I want to accept multiple payment methods so that customers can pay by cash, UPI, or card.
@@ -360,53 +360,54 @@ Customers request QR-based ordering and delivery, but the current system only su
 4. As a **Cashier**, I want the POS to work when the network is down so that I can continue serving customers during outages.
 5. As a **Cashier**, I want offline transactions queued locally so that orders sync automatically after reconnection.
 6. As a **Kitchen Staff**, I want to receive digital KOTs immediately after billing so that I can start preparing food without delay.
-7. As a **Kitchen Staff**, I want to update item status to cooking/ready/served so that the front desk knows order progress.
-8. As a **Branch Manager**, I want a clear audit trail for payments and refunds so that I can investigate discrepancies.
-9. As an **Owner**, I want branch-level sales reports so that I can compare performance across branches.
-10. As an **Inventory Manager**, I want to record purchase receipts with expiry dates so that I can avoid using expired stock.
-11. As an **Inventory Manager**, I want BOM relationships between menu items and ingredients so that stock decrements automatically.
-12. As a **Branch Manager**, I want expired stock alerts so that I can remove unsafe inventory before it is used.
-13. As a **Cashier**, I want order modifications before kitchen prep so that customer changes can be accommodated without waste.
-14. As a **Kitchen Staff**, I want to reject or hold an item in the KOT so that unavailable items are handled cleanly.
-15. As a **Branch Manager**, I want stale-order alerts so that orders waiting too long are escalated.
+7. As a **Customer**, I want to scan a QR code at my table so that I can place an order without waiting in line.
+8. As a **Customer**, I want to submit a mobile table order so that my food request goes directly to the kitchen.
+9. As a **Kitchen Staff**, I want to update item status to cooking/ready/served so that the front desk knows order progress.
+10. As a **Branch Manager**, I want a clear audit trail for payments and refunds so that I can investigate discrepancies.
+11. As an **Inventory Manager**, I want to record purchase receipts with expiry dates so that I can avoid using expired stock.
+12. As an **Inventory Manager**, I want BOM relationships between menu items and ingredients so that stock decrements automatically.
+13. As a **Branch Manager**, I want expired stock alerts so that I can remove unsafe inventory before it is used.
+14. As a **Cashier**, I want order modifications before kitchen prep so that customer changes can be accommodated without waste.
+15. As a **Kitchen Staff**, I want to reject or hold an item in the KOT so that unavailable items are handled cleanly.
 16. As an **Owner**, I want multi-tenant data isolation so that each franchise sees only its own data.
 17. As a **Branch Manager**, I want franchise menu override support so that local pricing can adapt to market conditions.
 18. As an **Owner**, I want row-level security so that users cannot access other franchise data.
 19. As a **Branch Manager**, I want cash reconciliation at shift end so that cash drawer totals are verified.
-20. As a **Branch Manager**, I want daily settlement reports so that I can compare cash vs system receipts.
-21. As an **Owner**, I want audit logs for discounts and deletions so that every high-risk change is documented.
-22. As a **Cashier**, I want staff-level login/logout tracking so that attendance is recorded by shift.
-23. As an **Inventory Manager**, I want stock-out handling to hide unavailable menu items so that customers cannot order impossible items.
+20. As an **Owner**, I want audit logs for discounts and deletions so that every high-risk change is documented.
+21. As a **Cashier**, I want payment failure handling so that failed transactions do not incorrectly mark orders as complete.
+22. As an **Owner**, I want secure role permissions so that only authorized users can perform sensitive actions.
+23. As a **Branch Manager**, I want offline sync recovery status so that I can confirm branch data is up to date.
 24. As an **Owner**, I want a kitchen display board so that the kitchen can manage high-volume ticket flow.
-25. As a **Branch Manager**, I want performance metrics during rush hour so that I can understand bottlenecks.
-26. As a **Cashier**, I want payment failure handling so that failed transactions do not incorrectly mark orders as complete.
-27. As a **Branch Manager**, I want partial fulfillment tracking so that items can be delivered separately when ready.
-28. As an **Inventory Manager**, I want waste categories for spoilage, theft, and trim so that my reports reflect true loss.
-29. As an **Owner**, I want secure role permissions so that only authorized users can perform sensitive actions.
-30. As a **Branch Manager**, I want offline sync recovery status so that I can confirm branch data is up to date.
 
-### 4.2 Phase 1 Stories (20 stories)
+### 4.2 Phase 1 Stories (26 stories)
 
-31. As an **Owner**, I want profitability dashboards so that I can compare branch margins and food costs.
-32. As an **Inventory Manager**, I want food cost percentage reports so that I can monitor ingredient spend.
-33. As a **Branch Manager**, I want labor efficiency metrics so that I can manage staff costs.
-34. As an **Cashier**, I want customer profiles captured at checkout so that I can recognize returning customers.
-35. As a **Branch Manager**, I want loyalty point accrual so that repeat customers receive rewards.
-36. As a **Cashier**, I want loyalty redemption at billing so that loyal customers can redeem points.
-37. As an **Owner**, I want menu version history so that I can audit pricing and menu changes.
-38. As an **Inventory Manager**, I want supplier lead time tracking so that I can reorder before stockouts.
-39. As a **Branch Manager**, I want regional menu variants so that I can add local items without impacting other branches.
-40. As an **Owner**, I want royalty tracking so that franchise revenue sharing can be calculated automatically.
-41. As a **Branch Manager**, I want onboarding reports for new branches so that growth is monitored.
-42. As a **Cashier**, I want manager approval requests for large refunds so that high-risk actions are controlled.
-43. As an **Owner**, I want compliance status reporting so that I can prepare for audits.
-44. As a **Branch Manager**, I want data export controls so that sensitive data is only shared with approval.
-45. As a **Branch Manager**, I want menu item availability rules triggered by inventory levels so that stockouts are handled automatically.
-46. As a **Kitchen Staff**, I want item-level remake tracking so that remade orders are associated correctly.
-47. As an **Owner**, I want access logs for user sessions so that suspicious activity can be reviewed.
-48. As a **Branch Manager**, I want customer acquisition and repeat rate insights so that marketing focus can be prioritized.
-49. As an **Inventory Manager**, I want batch reconciliation reports so that physical vs system stock discrepancies are highlighted.
-50. As a **Branch Manager**, I want a cash variance alert when drawer totals diverge from system totals so that issues are investigated.
+25. As an **Owner**, I want branch-level sales reports so that I can compare performance across branches.
+26. As a **Branch Manager**, I want stale-order alerts so that orders waiting too long are escalated.
+27. As a **Cashier**, I want staff-level login/logout tracking so that attendance is recorded by shift.
+28. As a **Branch Manager**, I want partial fulfillment tracking so that items can be delivered separately when ready.
+29. As an **Inventory Manager**, I want waste categories for spoilage, theft, and trim so that my reports reflect true loss.
+30. As a **Branch Manager**, I want daily settlement reports so that I can compare cash vs system receipts.
+31. As an **Inventory Manager**, I want stock-out handling to hide unavailable menu items so that customers cannot order impossible items.
+32. As an **Owner**, I want profitability dashboards so that I can compare branch margins and food costs.
+33. As an **Inventory Manager**, I want food cost percentage reports so that I can monitor ingredient spend.
+34. As a **Branch Manager**, I want labor efficiency metrics so that I can manage staff costs.
+35. As a **Cashier**, I want customer profiles captured at checkout so that I can recognize returning customers.
+36. As a **Branch Manager**, I want loyalty point accrual so that repeat customers receive rewards.
+37. As a **Cashier**, I want loyalty redemption at billing so that loyal customers can redeem points.
+38. As an **Owner**, I want menu version history so that I can audit pricing and menu changes.
+39. As an **Inventory Manager**, I want supplier lead time tracking so that I can reorder before stockouts.
+40. As a **Branch Manager**, I want regional menu variants so that I can add local items without impacting other branches.
+41. As an **Owner**, I want royalty tracking so that franchise revenue sharing can be calculated automatically.
+42. As a **Branch Manager**, I want onboarding reports for new branches so that growth is monitored.
+43. As a **Cashier**, I want manager approval requests for large refunds so that high-risk actions are controlled.
+44. As an **Owner**, I want compliance status reporting so that I can prepare for audits.
+45. As a **Branch Manager**, I want data export controls so that sensitive data is only shared with approval.
+46. As a **Branch Manager**, I want menu item availability rules triggered by inventory levels so that stockouts are handled automatically.
+47. As a **Kitchen Staff**, I want item-level remake tracking so that remade orders are associated correctly.
+48. As an **Owner**, I want access logs for user sessions so that suspicious activity can be reviewed.
+49. As a **Branch Manager**, I want customer acquisition and repeat rate insights so that marketing focus can be prioritized.
+50. As an **Inventory Manager**, I want batch reconciliation reports so that physical vs system stock discrepancies are highlighted.
+51. As a **Branch Manager**, I want a cash variance alert when drawer totals diverge from system totals so that issues are investigated.
 
 ### 4.3 Phase 2 Stories (10 stories)
 
@@ -439,11 +440,11 @@ Deliver a production-ready restaurant management system that:
 
 #### Epic 1: Core POS Billing & Kitchen Workflow
 
-- POS billing UI and payment capture
-- Split bill and partial payment handling
+- POS bill presentation and desktop/mobile bill display
+- QR table order capture and kitchen integration
 - Kitchen Order Ticket generation and item status updates
 - Order modification and cancellation workflow
-- Payment failure and refund handling
+- Support for existing branch payment workflows and cash reconciliation
 
 #### Epic 2: Offline Resilience & Sync
 
@@ -471,11 +472,10 @@ Deliver a production-ready restaurant management system that:
 
 #### Epic 5: Payment Settlement & Reconciliation
 
-- Payment gateway integration for UPI/card/cash
-- Cash drawer and float management
-- EOD settlement and variance report
-- Refund approval and chargeback handling
-- Payment audit trail and transaction logging
+- Support branch-level cash drawer and float management using existing payment methods
+- EOD settlement and variance reporting based on branch data
+- Refund approval handling and reimbursement logging
+- Bill audit trail and order change logging
 
 #### Epic 6: Rush Hour Performance & Reporting
 
@@ -484,6 +484,7 @@ Deliver a production-ready restaurant management system that:
 - Menu/pricing caching
 - Stress testing and load validation
 - Branch performance dashboard
+- QR table ordering with mobile menu access and order capture
 
 ### 5.3 MVP Timeline
 
@@ -499,6 +500,27 @@ Deliver a production-ready restaurant management system that:
 
 Total MVP duration: 10-11 weeks.
 
+### 5.3 Accelerated 5-Week MVP Option
+
+A compressed 5-week MVP is possible if the team narrows the scope to the smallest viable pilot.
+
+- Focus on one pilot branch and one franchise flow, not full multi-tenant rollout.
+- Deliver QR table ordering, mobile bill display, and kitchen order integration.
+- Use the branch's existing payment process; do not build new payment gateways.
+- Keep inventory functionality minimal: item availability and basic stock visibility only.
+- Defer offline sync beyond basic retry/reconnect behavior.
+- Defer delivery, reservations, loyalty, advanced analytics, and royalty reporting.
+
+Suggested 5-week schedule:
+
+- Sprint 0 (1 week): architecture, pilot branch data model, minimal security design
+- Sprint 1 (1 week): QR menu scan, mobile order capture, bill display
+- Sprint 2 (1 week): KOT generation, kitchen status updates, staff handoff
+- Sprint 3 (1 week): branch checkout handoff, bill audit logging, basic reconciliation
+- Sprint 4 (1 week): QA, pilot stabilization, user validation, bug fixes
+
+This option reduces risk by delivering a validated QR-ordering pilot first, then moving remaining enterprise features into Phase 1.
+
 ### 5.4 Phase 1 Epics
 
 - Profitability & analytics dashboard
@@ -510,11 +532,11 @@ Total MVP duration: 10-11 weeks.
 
 ### 5.5 Phase 2 Epics
 
-- Table reservations and waitlist management
-- QR ordering and mobile ordering integration
 - Delivery order workflow and driver tracking
+- Table reservations and waitlist management
 - Multi-currency and regional tax support
 - Advanced staff productivity and scheduling
+- Franchise compliance and regional reporting enhancements
 
 ---
 

@@ -20,6 +20,7 @@ This index guides you through the complete analysis and planning documentation f
 | [meeting-notes.md](meeting-notes.md)                                           | Client discovery meeting transcript      | Executive, Owner     | Reference     | ✅ Complete |
 | [real-world-scenarios-and-gaps.md](real-world-scenarios-and-gaps.md)           | **14 Critical Gaps Analysis**            | Technical, Owner, PM | **Read Next** | ✅ NEW      |
 | [implementation-readiness-checklist.md](implementation-readiness-checklist.md) | **Scope + Risk Framework**               | Owner, PM, Architect | **Read 2nd**  | ✅ NEW      |
+| [architecture.md](architecture.md)                                             | Stable system architecture and design    | Architect, Tech Lead | **Reference** | ✅ NEW      |
 | [critical-requirements-matrix.md](critical-requirements-matrix.md)             | **209 Requirements Mapped**              | Technical, PM        | **Reference** | ✅ NEW      |
 
 ---
